@@ -53,7 +53,6 @@ async def startup_event():
             YoutubeService.update_records(
                 db_client=db_client, youtube_client=getYoutubeClient()
             )
-            print("Updated Youtube records")
             time.sleep(60)
 
     thread = threading.Thread(target=backgorund_yt_update)

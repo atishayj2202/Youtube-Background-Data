@@ -35,6 +35,7 @@ class YoutubeService:
                 fn=[ApiCall.add, Record.add],
                 kwargs=[{"items": [call_record]}, {"items": parsed_videos}],
             )
+            print("Updated Youtube records")
         except:
             call_record: ApiCall = ApiCall(
                 topic=query,
