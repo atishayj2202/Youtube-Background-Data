@@ -10,6 +10,9 @@ class Record(DBSchemaBase):
     title: str
     description: str
     thumbnail_URL: str
+    channel_id: str
+    channel_name: str
+    video_id: str
     publish_time: datetime
 
     @classmethod
