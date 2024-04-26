@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All YouTube API Calls</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>All YouTube API Call(In Interval of 1 mins)</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Calling Time</th>
+            <th>Published After Time</th>
+            <th>Total Records</th>
+            <th>Status</th>
+        </tr>
+        {% for item in data %}
+        <tr>
+            <td><a href="/call/{{ item.id }}">{{ item.id }}</a></td>
+            <td>{{ item.topic }}</td>
+            <td>{{ item.created_at }}</td>
+            <td>{{ item.published_after.strftime('%Y-%m-%d %H:%M:%S %Z') }}</td>
+            <td>{{ item.records }}</td>
+            <td>{{ item.status }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
