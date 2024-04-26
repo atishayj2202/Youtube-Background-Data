@@ -12,7 +12,8 @@ class YoutubeClient:
     version = "v3"
 
     def __init__(self):
-        self.api_key = os.environ[self.env_var_api_key]
+        self.top = 1
+        self.api_key = os.environ[(self.env_var_api_key + str(self.top))]
         self.youtube = build(self.service_name, self.version, developerKey=self.api_key)
 
     def search_last_hour(self, query: str):
@@ -25,6 +26,22 @@ class YoutubeClient:
             maxResults=20,
             publishedAfter=one_minute_ago.isoformat() + "Z",
         )
-        response = request.execute()
-        response = response.get("items", [])
-        return response, parse_time_datetime_to_tz(one_minute_ago)
+        if self.top == 4:
+            return [], one_minute_ago
+        try:
+            response = request.execute()
+            response = response.get("items", [])
+            self.top = 1
+            return response, parse_time_datetime_to_tz(one_minute_ago)
+        except:
+            self.top += 1
+            self.api_key = os.environ[(self.env_var_api_key + str(self.top))]
+            self.youtube = build(
+                self.service_name, self.version, developerKey=self.api_key
+            )
+            return self.search_last_hour(query)
+
+
+if __name__ == "__main__":
+    yt = YoutubeClient()
+    print(yt.search_last_hour("official"))

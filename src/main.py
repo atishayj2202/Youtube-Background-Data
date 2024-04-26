@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 
+from src.client.database import DBClient
 from src.services.fetch import FetchService
 from src.services.youtube import YoutubeService
 from src.utils.client import getDBClient, getYoutubeClient
@@ -50,13 +51,19 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    db_client = getDBClient()
+    getDBClient()
 
     def backgorund_yt_update():
         while True:
-            YoutubeService.update_records(
-                db_client=db_client, youtube_client=getYoutubeClient()
-            )
+            temp_db_client = DBClient()
+            try:
+                YoutubeService.update_records(
+                    db_client=temp_db_client, youtube_client=getYoutubeClient()
+                )
+            except:
+                pass
+            temp_db_client.dispose()
+            del temp_db_client
             time.sleep(60)
 
     thread = threading.Thread(target=backgorund_yt_update)
@@ -68,14 +75,16 @@ templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/calls", response_class=HTMLResponse)
-async def get_calls(request: Request, db_client=Depends(getDBClient)):
+async def get_calls(request: Request, db_client: DBClient = Depends(getDBClient)):
     return FetchService.fetch_calls(
         db_client=db_client, templates=templates, request=request
     )
 
 
 @app.get("/call/{yt_call_id}", response_class=HTMLResponse)
-async def get_calls(request: Request, yt_call_id: UUID, db_client=Depends(getDBClient)):
+async def get_calls(
+    request: Request, yt_call_id: UUID, db_client: DBClient = Depends(getDBClient)
+):
     return FetchService.fetch_call(
         db_client=db_client, templates=templates, request=request, yt_call_id=yt_call_id
     )

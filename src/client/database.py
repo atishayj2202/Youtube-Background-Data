@@ -52,3 +52,6 @@ class DBClient:
             raise e
         finally:
             session.close()
+
+    def dispose(self):
+        self.engine.dispose()
