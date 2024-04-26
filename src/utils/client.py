@@ -1,10 +1,10 @@
-from src.client.cockroach import CockroachDBClient
+from src.client.database import DBClient
 
-cockroachClient = None
+db_client = None
 
 
-def getCockroachClient() -> CockroachDBClient:
-    global cockroachClient
-    if cockroachClient is None:
-        cockroachClient = CockroachDBClient()
-    return cockroachClient
+def getCockroachClient() -> DBClient:
+    global db_client
+    if db_client is None:
+        db_client = DBClient()
+    return db_client
