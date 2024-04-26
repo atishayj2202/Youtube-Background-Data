@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>About Me</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+        ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        li {
+            color: #666;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>I am Atishaya Jain</h1>
+        <p><strong>Backend Developer</strong></p>
+        <p>I used the following technologies to build:</p>
+        <ul>
+            <li>Python
+                <ul>
+                    <li>FastAPI - To Host Backend Server</li>
+                    <li>SQLAlchemy - Mainly connection for remote server To store all the data I'm retrieving</li>
+                    <li>Youtube API - To get latest records every 60 seconds</li>
+                </ul>
+            </li>
+            <li>Microsoft Azure
+                <ul>
+                    <li>Container Apps - Host my server on Azure</li>
+                    <li>Azure PostgreSQL - Remote database for storing data</li>
+                </ul>
+            </li>
+            <li>Docker - For Containerisation of app</li>
+        </ul>
+        <p><strong>To Run the Server Locally, You Need:</strong></p>
+        <ul>
+            <li>PostgreSQL Database</li>
+            <li>Youtube API Key</li>
+        </ul>
+        <p><strong>Required Environment Variables:</strong></p>
+        <ul>
+            <li>YOUTUBE_API_KEY - Your Youtube API key</li>
+            <li>DB_NAME - Database name</li>
+            <li>DB_USER - Database username</li>
+            <li>DB_PASS - Database password</li>
+            <li>DB_HOST - Database host URL</li>
+            <li>DB_PORT - Database port</li>
+            <li>SSL_CERT_PATH - SSL certificate path for secure connections</li>
+        </ul>
+        <p><a href="/calls">View All Calls Made to YouTube API</a></p>
+    </div>
+</body>
+</html>

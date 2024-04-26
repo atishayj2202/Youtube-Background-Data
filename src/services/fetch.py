@@ -22,6 +22,7 @@ class FetchService:
         for i in parsed_data:
             i["created_at"] = parse_time_tz_to_str(i["created_at"])
             i["published_after"] = parse_time_tz_to_str(i["published_after"])
+            i["status"] = i["status"].value
         return templates.TemplateResponse(
             "api_call.html", {"data": parsed_data, "request": request}
         )

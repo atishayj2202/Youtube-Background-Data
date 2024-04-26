@@ -81,6 +81,11 @@ async def get_calls(request: Request, yt_call_id: UUID, db_client=Depends(getDBC
     )
 
 
+@app.get("/about", response_class=HTMLResponse)
+async def about(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
+
+
 if __name__ == "__main__":
     import uvicorn
 
