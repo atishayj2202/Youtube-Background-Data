@@ -13,5 +13,11 @@ def parse_time_str_to_tz(time_str: str) -> datetime:
     )
 
 
+def parse_time_tz_to_str(time: datetime) -> str:
+    return time.astimezone(tz=pytz.timezone("Asia/Kolkata")).strftime(
+        "%I:%M:%S %p %d %B %Y"
+    )
+
+
 def parse_time_datetime_to_tz(time: datetime) -> datetime:
     return time.astimezone(tz=pytz.utc)

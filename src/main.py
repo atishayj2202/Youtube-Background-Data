@@ -3,15 +3,15 @@ import threading
 import time
 from uuid import UUID
 
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
-from fastapi.responses import HTMLResponse
 
-from src.services.youtube import YoutubeService
 from src.services.fetch import FetchService
+from src.services.youtube import YoutubeService
 from src.utils.client import getDBClient, getYoutubeClient
 
 app = FastAPI(title="Air It Backend", version="0.1.0")
@@ -51,6 +51,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     db_client = getDBClient()
+
     def backgorund_yt_update():
         while True:
             YoutubeService.update_records(
@@ -65,13 +66,20 @@ async def startup_event():
 
 templates = Jinja2Templates(directory="templates")
 
+
 @app.get("/calls", response_class=HTMLResponse)
-async def get_calls(request: Request, db_client = Depends(getDBClient)):
-    return FetchService.fetch_calls(db_client=db_client, templates=templates, request=request)
+async def get_calls(request: Request, db_client=Depends(getDBClient)):
+    return FetchService.fetch_calls(
+        db_client=db_client, templates=templates, request=request
+    )
+
 
 @app.get("/call/{yt_call_id}", response_class=HTMLResponse)
-async def get_calls(request: Request, yt_call_id: UUID, db_client = Depends(getDBClient)):
-    return FetchService.fetch_call(db_client=db_client, templates=templates, request=request, yt_call_id=yt_call_id)
+async def get_calls(request: Request, yt_call_id: UUID, db_client=Depends(getDBClient)):
+    return FetchService.fetch_call(
+        db_client=db_client, templates=templates, request=request, yt_call_id=yt_call_id
+    )
+
 
 if __name__ == "__main__":
     import uvicorn
