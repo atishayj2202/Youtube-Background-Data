@@ -34,3 +34,21 @@ class DBClient:
             raise e
         finally:
             session.close()
+
+    def queries(
+        self, fn: list[Callable[[Session, ...], Any]], kwargs: list[dict[str, Any]]
+    ):
+        session = self.get_session_maker()()
+        try:
+            results = []
+            for f in list(zip(fn, kwargs)):
+                temp = f[1]
+                result = f[0](session, **temp)
+                results.append(result)
+            session.commit()
+            return results
+        except Exception as e:
+            session.rollback()
+            raise e
+        finally:
+            session.close()
