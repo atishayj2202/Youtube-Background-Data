@@ -5,7 +5,7 @@ export PROJECT_NAME=youtube-backgrouund
 
 # docker details
 export IMAGE_NAME=youtube-background-service
-export IMAGE_VERSION=0.1.3-dev0
+export IMAGE_VERSION=0.1.4-dev0
 export REPOSITORY_NAME=atishayj2202
 export FULL_IMAGE_NAME=${REPOSITORY_NAME}/${IMAGE_NAME}:${IMAGE_VERSION}
 export FLYWAY_CONTAINER_NAME=flyway/flyway:latest
