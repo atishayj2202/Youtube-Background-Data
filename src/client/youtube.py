@@ -22,7 +22,7 @@ class YoutubeClient:
             order="date",
             q=query,
             type="video",
-            maxResults=50,
+            maxResults=20,
             publishedAfter=one_minute_ago.isoformat() + "Z",
         )
         response = request.execute()
