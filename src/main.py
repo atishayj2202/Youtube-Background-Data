@@ -1,4 +1,5 @@
 import os
+import threading
 import time
 
 from fastapi import FastAPI, HTTPException
@@ -6,7 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 
-from utils.client import getCockroachClient, getFirebaseClient
+from src.services.youtube import YoutubeService
+from src.utils.client import getDBClient, getYoutubeClient
 
 app = FastAPI(title="Air It Backend", version="0.1.0")
 
@@ -44,7 +46,19 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    getCockroachClient()
+    db_client = getDBClient()
+
+    def backgorund_yt_update():
+        while True:
+            YoutubeService.update_records(
+                db_client=db_client, youtube_client=getYoutubeClient()
+            )
+            print("Updated Youtube records")
+            time.sleep(60)
+
+    thread = threading.Thread(target=backgorund_yt_update)
+    thread.daemon = True
+    thread.start()
 
 
 """@app.middleware("http")
