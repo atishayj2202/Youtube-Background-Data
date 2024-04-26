@@ -9,7 +9,7 @@ class Record(DBSchemaBase):
     api_call_id: UUID
     title: str
     description: str
-    thumbnail_URL: str
+    thumbnail_url: str
     channel_id: str
     channel_name: str
     video_id: str
