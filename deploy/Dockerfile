@@ -16,5 +16,6 @@ RUN poetry install --no-root
 # copy code and resources
 COPY src /code/src
 COPY deploy-keys /code/keys
+COPY templates /code/templates
 
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]

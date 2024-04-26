@@ -1,10 +1,10 @@
 set -e
 usage="Usage: sh deploy/staging.sh [migrate|build_push]"
 
-export PROJECT_NAME=air-it
+export PROJECT_NAME=youtube-backgrouund
 
 # docker details
-export IMAGE_NAME=air-it-backend
+export IMAGE_NAME=youtube-background-service
 export IMAGE_VERSION=0.1.0
 export REPOSITORY_NAME=atishayj2202
 export FULL_IMAGE_NAME=${REPOSITORY_NAME}/${IMAGE_NAME}:${IMAGE_VERSION}
