@@ -3,7 +3,11 @@ from datetime import datetime, timedelta
 
 from googleapiclient.discovery import build
 
-from src.utils.time import get_current_time, parse_time_datetime_to_tz, parse_time_str_to_tz
+from src.utils.time import (
+    get_current_time,
+    parse_time_datetime_to_tz,
+    parse_time_str_to_tz,
+)
 
 
 class YoutubeClient:
@@ -16,14 +20,14 @@ class YoutubeClient:
         self.youtube = build(self.service_name, self.version, developerKey=self.api_key)
 
     def search_last_hour(self, query: str):
-        one_minute_ago = (datetime.utcnow() - timedelta(minutes=60))
+        one_minute_ago = datetime.utcnow() - timedelta(minutes=60)
         request = self.youtube.search().list(
             part="snippet",
             order="date",
             q=query,
             type="video",
             maxResults=50,
-            publishedAfter=one_minute_ago.isoformat() + 'Z'
+            publishedAfter=one_minute_ago.isoformat() + "Z",
         )
         response = request.execute()
         return response, parse_time_datetime_to_tz(one_minute_ago)
