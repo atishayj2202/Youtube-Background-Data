@@ -121,7 +121,15 @@ class DBSchemaBase(BaseModel, ABC):
 
     @classmethod
     def get_all(cls, db: Session) -> List[DBSchemaBase] | None:
-        return cls._extract_all_data(db, select(cls._schema_cls()))
+        schema_cls = cls._schema_cls()
+        result = (
+            db.query(schema_cls)
+            .order_by(getattr(schema_cls, "created_at").desc())
+            .all()
+        )
+        if result:
+            return [cls.model_validate(r, from_attributes=True) for r in result]
+        return None
 
     @classmethod
     def get_id(
@@ -163,92 +171,6 @@ class DBSchemaBase(BaseModel, ABC):
         return None
 
     @classmethod
-    def get_by_multiple_field_unique(
-        cls,
-        db: Session,
-        fields: list[str],
-        match_values: list[Any],
-        error_not_exist: bool = False,
-    ) -> DBSchemaBase | None:
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .filter(
-                and_(
-                    *(getattr(schema_cls, f) == v for f, v in zip(fields, match_values))
-                )
-            )
-            .first()
-        )
-        if result:
-            return cls.model_validate(result, from_attributes=True)
-        if error_not_exist:
-            raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {fields} {match_values}"
-            )
-        return None
-
-    @classmethod
-    def get_by_multiple_field_multiple(
-        cls,
-        db: Session,
-        fields: list[str],
-        match_values: list[Any],
-        error_not_exist: bool = False,
-    ) -> list[DBSchemaBase] | None:
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .filter(
-                and_(
-                    *(getattr(schema_cls, f) == v for f, v in zip(fields, match_values))
-                )
-            )
-            .all()
-        )
-        if result:
-            return [cls.model_validate(r, from_attributes=True) for r in result]
-        if error_not_exist:
-            raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {fields} {match_values}"
-            )
-        return None
-
-    @classmethod
-    def get_by_multiple_field_counted(
-        cls,
-        db: Session,
-        fields: list[str],
-        match_values: list[Any],
-        count: int,
-        start_time: datetime,
-        error_not_exist: bool = False,
-    ) -> list[DBSchemaBase] | None:
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .filter(
-                and_(
-                    getattr(schema_cls, "created_at") < start_time,
-                    *(
-                        getattr(schema_cls, f) == v
-                        for f, v in zip(fields, match_values)
-                    ),
-                )
-            )
-            .order_by(getattr(schema_cls, "created_at").desc())
-            .limit(count)
-            .all()
-        )
-        if result:
-            return [cls.model_validate(r, from_attributes=True) for r in result]
-        if error_not_exist:
-            raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {fields} {match_values}"
-            )
-        return None
-
-    @classmethod
     def get_by_field_multiple(
         cls, db: Session, field: str, match_value: Any, error_not_exist: bool = False
     ) -> list[DBSchemaBase] | None:
@@ -257,126 +179,14 @@ class DBSchemaBase(BaseModel, ABC):
         result = (
             db.query(schema_cls)
             .filter(and_(getattr(schema_cls, field) == match_value))
-            .all()
-        )
-        if result:
-            return [cls.model_validate(r, from_attributes=True) for r in result]
-        if error_not_exist:
-            raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {field} {match_value}"
-            )
-        return None
-
-    @classmethod
-    def get_by_time_field_multiple(
-        cls,
-        db: Session,
-        time_field: str,
-        start_time: datetime,
-        end_time: datetime,
-        field: str,
-        match_value: Any,
-        error_not_exist: bool = False,
-    ) -> list[DBSchemaBase] | None:
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .filter(
-                and_(
-                    getattr(schema_cls, field) == match_value,
-                    getattr(schema_cls, time_field).between(start_time, end_time),
-                )
-            )
-            .all()
-        )
-        if result:
-            return [cls.model_validate(r, from_attributes=True) for r in result]
-        if error_not_exist:
-            raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {field} {match_value}"
-            )
-        return None
-
-    @classmethod
-    def get_by_value_in_list_uncounted(
-        cls,
-        db: Session,
-        field: str,
-        field_2: str,
-        match_value_2: Any,
-        match_values: list[Any],
-        error_not_exist: bool = False,
-    ) -> list[DBSchemaBase] | None:
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .filter(
-                and_(
-                    getattr(schema_cls, field).op("@>")(match_values),
-                    getattr(schema_cls, field_2) == match_value_2,
-                )
-            )
-            .all()
-        )
-        if result:
-            return [cls.model_validate(r, from_attributes=True) for r in result]
-        if error_not_exist:
-            raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {field} {match_values}"
-            )
-        return None
-
-    @classmethod
-    def get_by_value_in_list_counted(
-        cls,
-        db: Session,
-        start_time: datetime,
-        field: str,
-        match_values: list[Any],
-        count: int,
-        error_not_exist: bool = False,
-    ) -> list[DBSchemaBase] | None:
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .filter(
-                and_(
-                    getattr(schema_cls, "created_at") < start_time,
-                    getattr(schema_cls, field).op("&&")(match_values),
-                )
-            )
             .order_by(getattr(schema_cls, "created_at").desc())
-            .limit(count)
             .all()
         )
         if result:
             return [cls.model_validate(r, from_attributes=True) for r in result]
         if error_not_exist:
             raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {field} {match_values}"
-            )
-        return None
-
-    @classmethod
-    def get_by_field_value_list(
-        cls,
-        db: Session,
-        field: str,
-        match_values: list[Any],
-        error_not_exist: bool = False,
-    ) -> list[DBSchemaBase] | None:
-        """generic function to extract a single record which matches given column and value condition"""
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .filter(getattr(schema_cls, field).in_(match_values))
-            .all()
-        )
-        if result:
-            return [cls.model_validate(r, from_attributes=True) for r in result]
-        if error_not_exist:
-            raise Exception(
-                f"Could not find a record in {schema_cls.__name__} with {field} being one of {match_values}"
+                f"Could not find a record in {schema_cls.__name__} with {field} {match_value}"
             )
         return None
 
@@ -397,27 +207,3 @@ class DBSchemaBase(BaseModel, ABC):
     def get_field(cls, field):
         schema_cls = cls._schema_cls()
         return getattr(schema_cls, field)
-
-    @classmethod
-    def get_latest_record(
-        cls,
-        db: Session,
-        error_not_exist: bool = False,
-    ) -> DBSchemaBase | None:
-        """generic function to extract a single record which matches given column and value condition"""
-        schema_cls = cls._schema_cls()
-        result = (
-            db.query(schema_cls)
-            .order_by(getattr(schema_cls, "created_at").desc())
-            .first()
-        )
-        if result:
-            return cls.model_validate(result, from_attributes=True)
-        if error_not_exist:
-            raise Exception(f"Could not find a record in {schema_cls.__name__}")
-        return None
-
-    @classmethod
-    def delete_by_id(cls, db: Session, id: UUID):
-        schema_cls = cls._schema_cls()
-        db.query(schema_cls).filter(cls._schema_cls().id == id).delete()
