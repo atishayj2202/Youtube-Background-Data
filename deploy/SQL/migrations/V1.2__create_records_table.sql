@@ -6,7 +6,7 @@ CREATE TABLE records
     api_call_id           UUID NOT NULL,
     title         TEXT     NOT NULL,
     description   TEXT     NOT NULL,
-    thumnail_URL     TEXT NOT NULL,
+    thumbnail_URL     TEXT NOT NULL,
     publish_time   TIMESTAMPTZ NOT NULL,
     FOREIGN KEY (api_call_id) REFERENCES api_call (id)
 );
