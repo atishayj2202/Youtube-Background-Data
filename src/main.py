@@ -15,7 +15,7 @@ from src.services.fetch import FetchService
 from src.services.youtube import YoutubeService
 from src.utils.client import getDBClient, getYoutubeClient
 
-app = FastAPI(title="Air It Backend", version="0.1.0")
+app = FastAPI(title="YouTube Server Backend", version="0.1.1-dev0")
 
 origins = os.environ["CORS_ORIGINS"].split(",")
 
