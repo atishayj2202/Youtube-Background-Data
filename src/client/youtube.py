@@ -3,11 +3,7 @@ from datetime import datetime, timedelta
 
 from googleapiclient.discovery import build
 
-from src.utils.time import (
-    get_current_time,
-    parse_time_datetime_to_tz,
-    parse_time_str_to_tz,
-)
+from src.utils.time import parse_time_datetime_to_tz
 
 
 class YoutubeClient:
@@ -30,4 +26,5 @@ class YoutubeClient:
             publishedAfter=one_minute_ago.isoformat() + "Z",
         )
         response = request.execute()
+        response = response.get("items", [])
         return response, parse_time_datetime_to_tz(one_minute_ago)
